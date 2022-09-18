@@ -1,0 +1,31 @@
+# This is an auto-generated file. DO NOT EDIT
+apiVersion: v1
+data:
+  sidecar.automountServiceAccountToken: "false"
+  sidecar.container: |
+    command:
+    - /home/debian/containerless
+    env:
+    - name: RUST_LOG
+      value: info
+    image: mycluster-registry:49287/containerless:local
+    imagePullPolicy: Always
+    name: containerless
+    ports:
+    - containerPort: 8000
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 250m
+        memory: 64Mi
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    workflows.argoproj.io/configmap-type: ExecutorPlugin
+  name: containerless-executor-plugin

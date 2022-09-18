@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: multi-step-containerless-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: plugin-step
+            template: plugin-step
+            arguments:
+              parameters:
+                - name: input
+                  value: "Promaton Hackathon"
+        - - name: final-step
+            arguments:
+              parameters:
+                - name: message
+                  value: "{{ steps.plugin-step.outputs.result }}"
+            template: final-step
+
+    - name: plugin-step
+      inputs:
+        parameters:
+          - name: input
+      plugin:
+        containerless:
+          # Python >= 3.7 is supported
+          runtime: python-3.10
+          repoURL: https://github.com/pevers/example-python-step.git
+          targetRevision: main
+          args:
+            - "src/example.py"
+            - "{{ inputs.parameters.input }}"
+
+    - name: final-step
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: debian:buster
+        command: [echo]
+        args: ["{{ inputs.parameters.message }}"] 

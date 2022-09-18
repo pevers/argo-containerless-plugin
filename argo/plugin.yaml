@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ExecutorPlugin
+metadata:
+  name: containerless
+spec:
+  sidecar:
+    container:
+      command:
+        - /home/debian/containerless
+      image: mycluster-registry:49287/containerless:local
+      imagePullPolicy: Always
+      name: containerless
+      env:
+        - name: RUST_LOG
+          value: "info"
+      ports:
+        - containerPort: 8000
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"

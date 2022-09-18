@@ -1,0 +1,14 @@
+{
+  "name": "example-project",
+  "version": "1.0.0",
+  "description": "Example project to run as Argo Workflow step",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Peter Evers",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}
