@@ -8,7 +8,7 @@ data:
     env:
     - name: RUST_LOG
       value: info
-    image: mycluster-registry:49287/containerless:local
+    image: mycluster-registry:50959/containerless:local
     imagePullPolicy: Always
     name: containerless
     ports:

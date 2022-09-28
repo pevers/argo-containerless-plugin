@@ -2,7 +2,7 @@
 # containerless
 
 * Needs: 
-* Image: mycluster-registry:49287/containerless:local
+* Image: mycluster-registry:50959/containerless:local
 
 
 

@@ -1,4 +1,4 @@
-LOCAL_REGISTRY=mycluster-registry:49287
+LOCAL_REGISTRY=mycluster-registry:50959
 
 run-all-dev: build-docker push-image-locally build-plugin push-plugin
 

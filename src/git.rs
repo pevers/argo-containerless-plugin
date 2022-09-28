@@ -79,7 +79,7 @@ fn fetch_repo(plugin: &PluginParameters, target_dir: &PathBuf) -> Result<Reposit
 
 // Clone the module to a unique location and return the target location
 pub fn clone_module(plugin: &PluginParameters) -> Result<PathBuf, Error> {
-    let workdir = env::var("NODE_WORKDIR").unwrap_or(env::temp_dir().display().to_string());
+    let workdir = env::var("PYTHON_WORKDIR").unwrap_or(env::temp_dir().display().to_string());
     let module_info = extract_module_info(&plugin)?;
     let target_dir = Path::new(&workdir)
         .join(&module_info.host)

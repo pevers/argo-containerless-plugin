@@ -4,15 +4,23 @@ metadata:
   name: containerless
 spec:
   sidecar:
+    # TODO: Not possible (yet!)
+    # volumes:
+    #   - name: pv-storage
+    #     persistentVolumeClaim:
+    #       claimName: pv-claim
     container:
       command:
         - /home/debian/containerless
-      image: mycluster-registry:49287/containerless:local
+      image: mycluster-registry:50959/containerless:local
+      # TODO: Not necessary
       imagePullPolicy: Always
       name: containerless
       env:
         - name: RUST_LOG
           value: "info"
+        # - name: PYTHON_WORKDIR
+        #   value: "/python"
       ports:
         - containerPort: 8000
       securityContext:
@@ -25,3 +33,7 @@ spec:
         limits:
           memory: "128Mi"
           cpu: "500m"
+      # TODO: Not possible (yet!)
+      # volumeMounts:
+      #   - mountPath: "/python"
+      #     name: pv-storage

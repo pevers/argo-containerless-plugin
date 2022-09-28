@@ -58,14 +58,15 @@ RUST_LOG=info ARGO_TOKEN_PATH=test/token cargo test
 The Makefile assumes a local cluster created with a local registry. For example.
 
 ```console
-k3d cluster create mycluster --registry-create mycluster-registr
+k3d cluster create mycluster --registry-create mycluster-registry --volume /tmp/k3dvol:/tmp/k3dvol
 ```
 
 Install Argo following [this](https://argoproj.github.io/argo-workflows/quick-start/) tutorial.
 
-Then use the Makefile to deploy the plugin.
+Alter the Makefile so that the local registry port is known. Then use the Makefile to deploy the plugin.
 
 ```console
+docker ps -f name=mycluster-registry # Extract port number and edit Makefile
 make run-all-dev
 ```
 
@@ -78,7 +79,9 @@ argo submit -n argo/workflow.yaml
 ## Roadmap
 - [ ] Semantics should be the same as the Argo "script" step, maybe we should support the `ScriptTemplate` parameter
 - [ ] Make sure all errors are propagated correctly and the user has enough information when something fails
+- [ ] Terminating workflow steps causes a controller exception
 - [ ] Make sure that errors are thrown for incorrect Python scripts
-- [ ] Cache modules by mounting a PVC
-- [ ] Support for Node modules
+- [ ] Cache modules by mounting a PVC?
 - [ ] Publish a first version to Docker hub
+- [ ] Create Helm chart for plugin
+- [ ] Support for Node modules
