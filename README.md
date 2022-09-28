@@ -23,15 +23,16 @@ spec:
           targetRevision: main
           args:
             - "src/example.py"
-            - "--some"
-            - "parameter"
+            - "Promaton Hackathon"
 ```
+
+![screenshot](screenshot.png)
 
 ## Supports
 
 - [x] Python modules that can be installed via Poetry (pyproject.toml)
 - [x] Python 3.7, 3.8, 3.9, 3.10
-- [ ] Other Python build tools (pipenv, conda)
+- [ ] Other Python build tools (pipenv, conda, ...)
 - [ ] Node
 
 ## How it works
