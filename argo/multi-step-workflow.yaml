@@ -13,6 +13,10 @@ spec:
               parameters:
                 - name: input
                   value: "Promaton Hackathon"
+              artifacts:
+                - name: test-artifact
+                  raw:
+                    data: "test"
         - - name: final-step
             arguments:
               parameters:
@@ -24,6 +28,9 @@ spec:
       inputs:
         parameters:
           - name: input
+        artifacts:
+          - name: test-artifact
+            path: /tmp/test-artifact
       plugin:
         containerless:
           # Python >= 3.7 is supported

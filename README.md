@@ -79,10 +79,11 @@ argo submit -n argo/workflow.yaml
 ## Roadmap
 - [ ] Semantics should be the same as the Argo "script" step, maybe we should support the `ScriptTemplate` parameter
 - [ ] Make sure all errors are propagated correctly and the user has enough information when something fails
+- [ ] Make sure that the remote script execution is safe enough (restricted to  plugin container?)
+- [ ] Checkout remote branches automatically (instead of origin/branch-name)
 - [ ] Terminating workflow steps causes a controller exception
 - [ ] Artifact/Parameters should be handled correctly
 - [ ] Make sure that errors are thrown for incorrect Python scripts
-- [ ] Cache modules by mounting a PVC?
 - [ ] Publish a first version to Docker hub
 - [ ] Create Helm chart for plugin
 - [ ] Support for Node modules

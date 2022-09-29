@@ -4,9 +4,10 @@ use crate::argo::PluginParameters;
 use git2::Repository;
 use regex::Regex;
 use snafu::prelude::*;
+use uuid::Uuid;
 
 use std::{
-    env, fs,
+    env,
     path::{Path, PathBuf},
 };
 
@@ -47,7 +48,8 @@ fn extract_module_info<'a>(plugin: &'a PluginParameters) -> Result<ModuleInfo<'a
 }
 
 // Checkout specific branch, tag or commit
-fn checkout_branch(repo: &Repository, refname: &str) -> Result<(), Error> {
+fn checkout_branch(target_dir: &PathBuf, refname: &str) -> Result<(), Error> {
+    let repo = Repository::open(target_dir).context(GitFailedSnafu)?;
     let (object, reference) = repo.revparse_ext(refname).context(GitFailedSnafu)?;
     repo.checkout_tree(&object, None).context(GitFailedSnafu)?;
     match reference {
@@ -65,33 +67,13 @@ fn clone_repo(plugin: &PluginParameters, target_dir: &PathBuf) -> Result<Reposit
     Repository::clone(&plugin.repo_url, target_dir).context(GitFailedSnafu)
 }
 
-// Pulls the repo into the target directory.
-// The controller needs to have an access token defined in the secrets if the repo is private.
-fn fetch_repo(plugin: &PluginParameters, target_dir: &PathBuf) -> Result<Repository, Error> {
-    info!("Pulling {:?} into {:?}", plugin, target_dir);
-    let repo = Repository::open(target_dir).context(GitFailedSnafu)?;
-    repo.find_remote("origin")
-        .context(GitFailedSnafu)?
-        .fetch(&[&plugin.target_revision], None, None)
-        .context(GitFailedSnafu)?;
-    Ok(repo)
-}
-
 // Clone the module to a unique location and return the target location
 pub fn clone_module(plugin: &PluginParameters) -> Result<PathBuf, Error> {
     let workdir = env::var("PYTHON_WORKDIR").unwrap_or(env::temp_dir().display().to_string());
-    let module_info = extract_module_info(&plugin)?;
-    let target_dir = Path::new(&workdir)
-        .join(&module_info.host)
-        .join(&module_info.repo)
-        .join(&module_info.module)
-        .join(&plugin.target_revision);
-    let repo = if fs::metadata(&target_dir).is_ok() {
-        fetch_repo(plugin, &target_dir)?
-    } else {
-        clone_repo(plugin, &target_dir)?
-    };
-    checkout_branch(&repo, &plugin.target_revision)?;
+    let unique_id = Uuid::new_v4().to_string();
+    let target_dir = Path::new(&workdir).join(&unique_id);
+    clone_repo(plugin, &target_dir)?;
+    checkout_branch(&target_dir, &plugin.target_revision)?;
     Ok(target_dir)
 }
 
@@ -99,7 +81,7 @@ pub fn clone_module(plugin: &PluginParameters) -> Result<PathBuf, Error> {
 mod tests {
     use super::extract_module_info;
     use crate::{argo::PluginParameters, git::clone_module};
-    use std::{env, fs};
+    use std::fs;
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -128,21 +110,9 @@ mod tests {
             target_revision: "master".to_string(),
             args: vec!["build/example.js".into()],
         };
-        let tmp_dir = env::temp_dir();
-        clone_module(&parameters).unwrap();
+        let target_dir = clone_module(&parameters).unwrap();
 
         // Directory is created
-        assert_eq!(
-            fs::metadata(
-                tmp_dir
-                    .join("github.com")
-                    .join("pevers")
-                    .join("images-scraper")
-                    .join("master")
-            )
-            .unwrap()
-            .is_dir(),
-            true
-        );
+        assert_eq!(fs::metadata(target_dir).unwrap().is_dir(), true);
     }
 }
